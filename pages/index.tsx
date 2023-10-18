@@ -1,9 +1,31 @@
+import React, { use, useEffect, useState } from 'react';
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
+import {Elements} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const [publishablekey, setPublishableKey] = useState('')
+
+  useEffect(() => {
+    fetch('api/keys', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then((res) => res.json())
+    .then((data) => {
+      setPublishableKey(data.publishableKey)
+    })
+  })
+  if(!publishablekey){
+    return 'Loading....'
+  }
+
+  const stripePromise = loadStripe(publishablekey);
+
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
